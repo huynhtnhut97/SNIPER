@@ -133,7 +133,7 @@ class Tester(object):
         print(print_str)
         if self.logger: self.logger.info(print_str)
 
-    def aggregate(self, scale_cls_dets, vis=False, cache_name='cache', vis_path=None, vis_name=None,
+    def aggregate(self, scale_cls_dets,filename="none.png", vis=False, cache_name='cache', vis_path=None, vis_name=None,
                   pre_nms_db_divide=10, vis_ext='.png'):
         n_scales = len(scale_cls_dets)
         assert n_scales == len(self.cfg.TEST.VALID_RANGES), 'A valid range should be specified for each test scale'
@@ -196,7 +196,7 @@ class Tester(object):
                                1.0,
                                self.cfg.network.PIXEL_MEANS, self.class_names, threshold=0.5,
                                save_path=os.path.join(visualization_path, '{}{}'.format(vis_name if vis_name else i,
-                                                                                         vis_ext)), transform=False)
+                                                                                         vis_ext)), transform=False,filename=filename)
 
         if cache_name:
             cache_path = os.path.join(self.result_path, cache_name)

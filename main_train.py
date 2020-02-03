@@ -28,7 +28,7 @@ import argparse
 def parser():
     arg_parser = argparse.ArgumentParser('SNIPER training module')
     arg_parser.add_argument('--cfg', dest='cfg', help='Path to the config file',
-    							default='configs/faster/sniper_res101_e2e.yml',type=str)
+                                default='configs/faster/sniper_res101_e2e.yml',type=str)
     arg_parser.add_argument('--display', dest='display', help='Number of epochs between displaying loss info',
                             default=100, type=int)
     arg_parser.add_argument('--momentum', dest='momentum', help='BN momentum', default=0.995, type=float)
@@ -77,10 +77,10 @@ if __name__ == '__main__':
 
 
 
-    print('Creating Iterator with {} Images'.format(len(roidb)))
+    print(('Creating Iterator with {} Images'.format(len(roidb))))
     train_iter = MNIteratorE2E(roidb=roidb, config=config, batch_size=batch_size, nGPUs=nGPUs,
                                threads=config.TRAIN.NUM_THREAD, pad_rois_to=400)
-    print('The Iterator has {} samples!'.format(len(train_iter)))
+    print(('The Iterator has {} samples!'.format(len(train_iter))))
 
     # Creating the Logger
     logger, output_path = create_logger(config.output_path, args.cfg, config.dataset.image_set)
@@ -130,7 +130,7 @@ if __name__ == '__main__':
         eval_metrics.add(mask_metric)
 
     optimizer_params = get_optim_params(config, len(train_iter), batch_size)
-    print ('Optimizer params: {}'.format(optimizer_params))
+    print(('Optimizer params: {}'.format(optimizer_params)))
 
     # Checkpointing
     prefix = os.path.join(output_path, args.save_prefix)

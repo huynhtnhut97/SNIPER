@@ -8,6 +8,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import random
 import numpy as np
+import os
 
 
 def transform_im(im, pixel_means):
@@ -18,7 +19,7 @@ def transform_im(im, pixel_means):
     return im.astype(np.uint8)
 
 
-def visualize_dets(im, dets, scale, pixel_means, class_names, threshold=0.5, save_path='debug.png',
+def visualize_dets(im, dets, scale, pixel_means, class_names,filename, threshold=0.5, save_path='debug.png',
                    transform=True, dpi=80):
     if transform:
         im = transform_im(im, np.array(pixel_means)[[2, 1, 0]])
@@ -33,22 +34,38 @@ def visualize_dets(im, dets, scale, pixel_means, class_names, threshold=0.5, sav
     # Display the image
     ax.imshow(im, interpolation='nearest')
 
+    img_name = os.path.basename(filename)
+    # video_name = os.path.basename(os.path.dirname(filename))
+    # file_name = video_name+'_'+os.path.splitext(img_name)[0]+'.txt' #detected result file
+    file_name = 'results.txt'
+    file_path = os.path.join('./results',file_name)
+    with open(file_path,'w') as file:
     # Display Detections
-    for j, name in enumerate(class_names):
-        if name == '__background__': continue
-        color = (random.random(), random.random(), random.random())
-        for det in dets[j]:
-            bbox = det[:4] * scale
-            score = det[-1]
-            if score < threshold:
-                continue
-            rect = plt.Rectangle((bbox[0], bbox[1]),
-                                 bbox[2] - bbox[0],
-                                 bbox[3] - bbox[1], fill=False,
-                                 edgecolor=color, linewidth=3.5)
-            ax.add_patch(rect)
-            ax.text(bbox[0], bbox[1] - 2 if bbox[1]-2 > 15 else bbox[1]+15, '{:s} {:.1f}'.format(name, score),
-                    bbox=dict(facecolor=color, alpha=0.5), fontsize=10, color='white')
+        for j, name in enumerate(class_names):
+
+            if name == '__background__': continue
+            listofacception = ['pedestrian','people']
+
+            # if name not in listofacception: continue
+            color = (random.random(), random.random(), random.random())
+            for det in dets[j]:
+                bbox = det[:4] * scale
+                score = det[-1]
+                if score < threshold:
+                    continue
+                x = bbox[0]
+                y = bbox[1]
+                w = bbox[2] - bbox[0]
+                h =  bbox[3] - bbox[1]
+                file.write(str(name)+','+str(int(x))+','+str(int(y))+','+str(int(w))+','+str(int(h)))
+                file.write('\n')
+                rect = plt.Rectangle((bbox[0], bbox[1]),
+                                     bbox[2] - bbox[0],
+                                     bbox[3] - bbox[1], fill=False,
+                                     edgecolor=color, linewidth=3.5)
+                ax.add_patch(rect)
+                ax.text(bbox[0], bbox[1] - 2 if bbox[1]-2 > 15 else bbox[1]+15, '{:s} {:.1f}'.format(name, score),
+                        bbox=dict(facecolor=color, alpha=0.5), fontsize=10, color='white')
 
     ax.set(xlim=[0, width], ylim=[height, 0], aspect=1)
     fig.savefig(save_path, dpi=dpi, transparent=True)
